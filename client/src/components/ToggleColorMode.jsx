@@ -12,7 +12,11 @@ const ToggleColorMode = () => {
       right={0}
       m={'1rem'}
     >
-      {colorMode === 'dark' ? <SunIcon /> : <MoonIcon />}
+      {colorMode === 'dark' ? (
+        <SunIcon color={'orange.400'} />
+      ) : (
+        <MoonIcon color={'blue.700'} />
+      )}
     </Button>
   );
 };
