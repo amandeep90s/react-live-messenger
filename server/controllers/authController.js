@@ -1,7 +1,13 @@
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 
-const login = async (req, res, next) => {
+/**
+ * Handle the login for a user
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const attemptLogin = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const potentialLogin = await pool.query(
@@ -33,7 +39,13 @@ const login = async (req, res, next) => {
   }
 };
 
-const signup = async (req, res, next) => {
+/**
+ * Handle the registration of a new user
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const attemptRegister = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
@@ -61,7 +73,12 @@ const signup = async (req, res, next) => {
   }
 };
 
-const isLoggedIn = async (req, res) => {
+/**
+ * Handle the logged in state after successfull login
+ * @param {*} req
+ * @param {*} res
+ */
+const handleLogin = async (req, res) => {
   const {
     session: { user },
   } = req;
@@ -74,7 +91,7 @@ const isLoggedIn = async (req, res) => {
 };
 
 module.exports = {
-  login,
-  signup,
-  isLoggedIn,
+  attemptLogin,
+  attemptRegister,
+  handleLogin,
 };
