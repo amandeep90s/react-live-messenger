@@ -1,3 +1,4 @@
+const { StatusCodes } = require("http-status-codes");
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 
@@ -23,15 +24,15 @@ const attemptLogin = async (req, res, next) => {
 
       if (isSamePass) {
         req.session.user = { username, id: potentialLogin.rows[0].id };
-        res.json({ loggedIn: true, username });
+        res.status(StatusCodes.OK).json({ loggedIn: true, username });
       } else {
         res
-          .status(401)
+          .status(StatusCodes.UNAUTHORIZED)
           .json({ loggedIn: false, status: "Username or Password is wrong" });
       }
     } else {
       res
-        .status(401)
+        .status(StatusCodes.UNAUTHORIZED)
         .json({ loggedIn: false, status: "Username or Password is wrong" });
     }
   } catch (error) {
@@ -62,10 +63,10 @@ const attemptRegister = async (req, res, next) => {
       );
 
       req.session.user = { username, id: newUserQuery.rows[0].id };
-      res.status(200).json({ loggedIn: true, username });
+      res.status(StatusCodes.CREATED).json({ loggedIn: true, username });
     } else {
       res
-        .status(409)
+        .status(StatusCodes.CONFLICT)
         .json({ loggedIn: false, status: "Username already taken" });
     }
   } catch (error) {
@@ -84,9 +85,11 @@ const handleLogin = async (req, res) => {
   } = req;
 
   if (user?.username) {
-    res.status(200).json({ loggedIn: true, username: user.username });
+    res
+      .status(StatusCodes.OK)
+      .json({ loggedIn: true, username: user.username });
   } else {
-    res.status(401).json({ loggedIn: false });
+    res.status(StatusCodes.UNAUTHORIZED).json({ loggedIn: false });
   }
 };
 

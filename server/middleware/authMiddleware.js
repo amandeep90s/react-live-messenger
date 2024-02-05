@@ -1,4 +1,4 @@
-const { validationResult } = require("express-validator");
+const { StatusCodes } = require("http-status-codes");
 const authSchema = require("../validations/authSchema");
 
 const validateData = async (req, res, next) => {
@@ -6,7 +6,7 @@ const validateData = async (req, res, next) => {
     await authSchema.validate(req.body, { abortEarly: false });
     next();
   } catch (err) {
-    return res.status(400).json({ errors: err.errors }); // Send error response
+    return res.status(StatusCodes.BAD_REQUEST).json({ errors: err.errors }); // Send error response
   }
 };
 

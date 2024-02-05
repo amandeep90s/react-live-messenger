@@ -6,7 +6,7 @@ const helmet = require("helmet"); // Import Helmet security middleware
 const http = require("http"); // Import HTTP module
 const { Server } = require("socket.io"); // Import Socket.IO
 const session = require("express-session"); // Import Express session middleware
-const Redis = require("ioredis"); // Import Redis client library
+const redisClient = require("./redis"); // Import Redis client library
 const RedisStore = require("connect-redis").default; // Import Redis session store
 const authRouter = require("./routes/authRouter"); // Import authentication routes
 
@@ -35,7 +35,6 @@ app.use(
 app.use(express.json()); // Parse incoming JSON data
 
 // Configure session store using Redis
-const redisClient = new Redis();
 const redisStore = new RedisStore({ client: redisClient });
 app.use(
   session({
