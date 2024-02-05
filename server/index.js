@@ -1,65 +1,75 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const http = require("http");
-const { Server } = require("socket.io");
-const session = require("express-session");
-const authRouter = require("./routes/authRouter");
+// Require necessary modules
+require("dotenv").config(); // Load environment variables from .env file
+const express = require("express"); // Import Express.js
+const cors = require("cors"); // Import CORS middleware
+const helmet = require("helmet"); // Import Helmet security middleware
+const http = require("http"); // Import HTTP module
+const { Server } = require("socket.io"); // Import Socket.IO
+const session = require("express-session"); // Import Express session middleware
+const Redis = require("ioredis"); // Import Redis client library
+const RedisStore = require("connect-redis").default; // Import Redis session store
+const authRouter = require("./routes/authRouter"); // Import authentication routes
 
+// Create Express app and server
 const app = express();
-
 const server = http.createServer(app);
 
+// Create Socket.IO instance
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    // Configure CORS for Socket.IO
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
 });
 
-app.use(helmet());
+// Apply middleware
+app.use(helmet()); // Apply Helmet security headers
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    // Configure CORS for Express
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json()); // Parse incoming JSON data
+
+// Configure session store using Redis
+const redisClient = new Redis();
+const redisStore = new RedisStore({ client: redisClient });
 app.use(
   session({
-    secret: process.env.COOKIE_SECRET,
-    credentials: true,
-    name: "sid",
-    resave: false,
-    saveUninitialized: false,
+    secret: process.env.COOKIE_SECRET, // Use secret from environment variable
+    credentials: true, // Enable session cookies to be sent with credentials
+    name: "sid", // Set session cookie name
+    store: redisStore, // Use RedisStore for session persistence
+    resave: false, // Don't resave session on every request
+    saveUninitialized: false, // Don't create session until data is stored
     cookie: {
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      expires: 1000 * 60 * 60 * 24 * 7,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production", // Set secure cookie flag in production
+      httpOnly: true, // Prevent client-side JavaScript access to session cookie
+      expires: 1000 * 60 * 60 * 24 * 7, // Set session cookie expiration to 7 days
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Set SameSite attribute for security
     },
   })
 );
 
-app.get("/", (req, res) => res.json("Hello World"));
+// Define routes
+app.get("/", (req, res) => res.json("Hello World")); // Basic route for testing
+app.use("/api/auth", authRouter); // Mount authentication routes
 
-app.use("/api/auth", authRouter);
-
+// Error handling middleware
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;
   const message = error.message || "Something went wrong";
-
-  return res.status(statusCode).json({
-    status: false,
-    statusCode,
-    message,
-  });
+  res.status(statusCode).json({ status: false, statusCode, message });
 });
 
+// Socket.IO connection event listener (empty for now)
 io.on("connect", (socket) => {});
 
-const PORT = process.env.SERVER_PORT;
+// Start the server
+const PORT = process.env.SERVER_PORT || 5000; // Get port from environment variable or default to 5000
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
