@@ -2,11 +2,14 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Button, ButtonGroup, Heading, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { Form, Formik } from "formik";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import TextField from "../components/TextField";
+import { AccountContext } from "../AccountContext";
+import TextField from "./TextField";
 
 const SignUp = () => {
+  const { setUser } = useContext(AccountContext);
   const navigate = useNavigate();
 
   return (
@@ -27,7 +30,12 @@ const SignUp = () => {
 
         axios
           .post("/api/auth/signup", { ...values })
-          .then(({ data }) => console.log(data))
+          .then(({ data }) => {
+            if (data.loggedIn) {
+              setUser({ ...data });
+              navigate("/home");
+            }
+          })
           .catch((error) => console.log(error));
       }}
     >
