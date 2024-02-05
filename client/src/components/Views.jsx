@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { AccountContext } from "./AccountContext";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
+import Home from "./Home/Home";
 import NotFound from "./NotFound";
 import PrivateRoutes from "./PrivateRoutes";
 
@@ -17,7 +18,7 @@ const Views = () => {
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route element={<PrivateRoutes />}>
-        <Route path="/home" element={<Text>Hello home</Text>} />
+        <Route path="/home" element={<Home />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
