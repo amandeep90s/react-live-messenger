@@ -36,6 +36,7 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
+      expires: 1000 * 60 * 60 * 24 * 7,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })

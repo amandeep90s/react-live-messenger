@@ -50,16 +50,31 @@ const signup = async (req, res, next) => {
       );
 
       req.session.user = { username, id: newUserQuery.rows[0].id };
-      res.json({ loggedIn: true, username });
+      res.status(200).json({ loggedIn: true, username });
     } else {
-      res.json({ loggedIn: false, status: "Username already taken" });
+      res
+        .status(409)
+        .json({ loggedIn: false, status: "Username already taken" });
     }
   } catch (error) {
     next(error);
   }
 };
 
+const isLoggedIn = async (req, res) => {
+  const {
+    session: { user },
+  } = req;
+
+  if (user?.username) {
+    res.status(200).json({ loggedIn: true, username: user.username });
+  } else {
+    res.status(401).json({ loggedIn: false });
+  }
+};
+
 module.exports = {
   login,
   signup,
+  isLoggedIn,
 };

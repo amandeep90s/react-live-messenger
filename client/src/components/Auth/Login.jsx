@@ -1,7 +1,7 @@
-import { Button, ButtonGroup, Heading, VStack } from "@chakra-ui/react";
+import { Button, ButtonGroup, Heading, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { Form, Formik } from "formik";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { AccountContext } from "../AccountContext";
@@ -10,6 +10,7 @@ import TextField from "./TextField";
 const Login = () => {
   const { setUser } = useContext(AccountContext);
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   return (
     <Formik
@@ -26,7 +27,7 @@ const Login = () => {
       })}
       onSubmit={(values, actions) => {
         actions.resetForm();
-
+        setError("");
         axios
           .post("/api/auth/login", { ...values })
           .then(({ data }) => {
@@ -35,7 +36,7 @@ const Login = () => {
               navigate("/home");
             }
           })
-          .catch((error) => console.log(error));
+          .catch((error) => setError(error.response.data.status));
       }}
     >
       <VStack
@@ -47,6 +48,12 @@ const Login = () => {
         spacing={"1rem"}
       >
         <Heading>Log In</Heading>
+        {error && (
+          <Text as="p" color="red.500">
+            {error}
+          </Text>
+        )}
+
         <TextField
           label="Username"
           name="username"
