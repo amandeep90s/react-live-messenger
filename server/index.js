@@ -5,10 +5,12 @@ const cors = require("cors"); // Import CORS middleware
 const helmet = require("helmet"); // Import Helmet security middleware
 const http = require("http"); // Import HTTP module
 const { Server } = require("socket.io"); // Import Socket.IO
-const session = require("express-session"); // Import Express session middleware
-const redisClient = require("./redis"); // Import Redis client library
-const RedisStore = require("connect-redis").default; // Import Redis session store
 const authRouter = require("./routes/authRouter"); // Import authentication routes
+const {
+  corsConfig,
+  sessionMiddleware,
+  wrap,
+} = require("./middleware/sessionMiddleware");
 
 // Create Express app and server
 const app = express();
@@ -16,42 +18,15 @@ const server = http.createServer(app);
 
 // Create Socket.IO instance
 const io = new Server(server, {
-  cors: {
-    // Configure CORS for Socket.IO
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  },
+  cors: corsConfig,
 });
 
 // Apply middleware
 app.use(helmet()); // Apply Helmet security headers
-app.use(
-  cors({
-    // Configure CORS for Express
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  })
-);
+app.use(cors(corsConfig));
 app.use(express.json()); // Parse incoming JSON data
 
-// Configure session store using Redis
-const redisStore = new RedisStore({ client: redisClient });
-app.use(
-  session({
-    secret: process.env.COOKIE_SECRET, // Use secret from environment variable
-    credentials: true, // Enable session cookies to be sent with credentials
-    name: "sid", // Set session cookie name
-    store: redisStore, // Use RedisStore for session persistence
-    resave: false, // Don't resave session on every request
-    saveUninitialized: false, // Don't create session until data is stored
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Set secure cookie flag in production
-      httpOnly: true, // Prevent client-side JavaScript access to session cookie
-      expires: 1000 * 60 * 60 * 24 * 7, // Set session cookie expiration to 7 days
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Set SameSite attribute for security
-    },
-  })
-);
+app.use(sessionMiddleware); // Apply session middleware
 
 // Define routes
 app.get("/", (req, res) => res.json("Hello World")); // Basic route for testing
@@ -64,8 +39,11 @@ app.use((error, req, res, next) => {
   res.status(statusCode).json({ status: false, statusCode, message });
 });
 
+io.use(wrap(sessionMiddleware));
 // Socket.IO connection event listener (empty for now)
-io.on("connect", (socket) => {});
+io.on("connect", (socket) => {
+  console.log(socket.request.session.user.username);
+});
 
 // Start the server
 const PORT = process.env.SERVER_PORT || 5000; // Get port from environment variable or default to 5000
