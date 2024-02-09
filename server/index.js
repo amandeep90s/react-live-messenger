@@ -11,6 +11,7 @@ const {
   sessionMiddleware,
   wrap,
 } = require("./middleware/sessionMiddleware");
+const { authorizeUser } = require("./middleware/socketMiddleware");
 
 // Create Express app and server
 const app = express();
@@ -40,9 +41,10 @@ app.use((error, req, res, next) => {
 });
 
 io.use(wrap(sessionMiddleware));
+io.use(authorizeUser);
 // Socket.IO connection event listener (empty for now)
 io.on("connect", (socket) => {
-  console.log(socket.request.session.user.username);
+  console.log("Connected to the socket");
 });
 
 // Start the server
