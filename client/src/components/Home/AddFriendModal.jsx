@@ -6,15 +6,26 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/modal";
-import { Button, ModalOverlay } from "@chakra-ui/react";
+import { Button, Heading, ModalOverlay } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import PropTypes from "prop-types";
+import { useCallback, useContext, useState } from "react";
 import * as Yup from "yup";
+import socket from "../../socket";
 import TextField from "../TextField";
+import { FriendContext } from "./Home";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
+  const [error, setError] = useState("");
+  const { setFriendList } = useContext(FriendContext);
+
+  const closeModal = useCallback(() => {
+    setError("");
+    onClose();
+  }, [onClose]);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal isOpen={isOpen} onClose={closeModal} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Add a friend</ModalHeader>
@@ -27,14 +38,33 @@ const AddFriendModal = ({ isOpen, onClose }) => {
               .min(6, "Username too short")
               .max(28, "Username too long"),
           })}
-          onSubmit={(values, actions) => {
-            console.log(values);
-            onClose();
-            actions.resetForm();
+          onSubmit={(values) => {
+            socket.emit(
+              "add_friend",
+              values.friendName,
+              ({ errorMsg, done }) => {
+                if (done) {
+                  setFriendList((prev) => [values.friendName, ...prev]);
+                  closeModal();
+                  return;
+                }
+                setError(errorMsg);
+              }
+            );
           }}
         >
           <Form>
             <ModalBody>
+              {error && (
+                <Heading
+                  as="p"
+                  color="red.500"
+                  fontSize="md"
+                  textAlign="center"
+                >
+                  {error}
+                </Heading>
+              )}
               <TextField
                 name="friendName"
                 label="Friend's name"

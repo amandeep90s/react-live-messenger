@@ -1,6 +1,6 @@
 import axios from "axios";
 import PropTypes from "prop-types";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AccountContext = createContext();
@@ -8,6 +8,8 @@ export const AccountContext = createContext();
 const UserContext = ({ children }) => {
   const [user, setUser] = useState({ loggedIn: null });
   const navigate = useNavigate();
+
+  const userContextMemo = useMemo(() => ({ user, setUser }), [user]);
 
   useEffect(() => {
     axios
@@ -21,10 +23,10 @@ const UserContext = ({ children }) => {
         }
       })
       .catch(() => setUser({ loggedIn: false }));
-  }, []);
+  }, [navigate]);
 
   return (
-    <AccountContext.Provider value={{ user, setUser }}>
+    <AccountContext.Provider value={userContextMemo}>
       {children}
     </AccountContext.Provider>
   );

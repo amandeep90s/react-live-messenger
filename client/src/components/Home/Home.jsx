@@ -7,17 +7,14 @@ import useSocketSetup from "./useSocketSetup";
 export const FriendContext = createContext();
 
 const Home = () => {
-  const [friendList, setFriendList] = useState([
-    { username: "aman", connected: true },
-    { username: "gaman", connected: false },
-  ]);
+  const [friendList, setFriendList] = useState([]);
 
   const contextValue = useMemo(
     () => ({ friendList, setFriendList }),
     [friendList]
   );
 
-  useSocketSetup();
+  useSocketSetup(setFriendList);
 
   return (
     <FriendContext.Provider value={contextValue}>
