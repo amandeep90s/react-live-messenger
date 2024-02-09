@@ -6,7 +6,11 @@ const helmet = require("helmet"); // Import Helmet security middleware
 const http = require("http"); // Import HTTP module
 const { Server } = require("socket.io"); // Import Socket.IO
 const authRouter = require("./routes/authRouter"); // Import authentication routes
-const { initializeUser, addFriend } = require("./controllers/socketController");
+const {
+  initializeUser,
+  addFriend,
+  onDisconnect,
+} = require("./controllers/socketController");
 const {
   corsConfig,
   sessionMiddleware,
@@ -47,10 +51,14 @@ io.use(authorizeUser);
 io.on("connect", (socket) => {
   // Initialize the user
   initializeUser(socket);
+
   // Add friend
   socket.on("add_friend", (friendName, cb) => {
     addFriend(socket, friendName, cb);
   });
+
+  // On Disconnect
+  socket.on("disconnecting", () => onDisconnect(socket));
 });
 
 // Start the server

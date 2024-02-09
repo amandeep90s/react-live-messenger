@@ -42,9 +42,9 @@ const AddFriendModal = ({ isOpen, onClose }) => {
             socket.emit(
               "add_friend",
               values.friendName,
-              ({ errorMsg, done }) => {
+              ({ errorMsg, done, newFriend }) => {
                 if (done) {
-                  setFriendList((prev) => [values.friendName, ...prev]);
+                  setFriendList((prev) => [newFriend, ...prev]);
                   closeModal();
                   return;
                 }
