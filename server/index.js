@@ -45,6 +45,7 @@ io.use(authorizeUser);
 // Socket.IO connection event listener (empty for now)
 io.on("connect", (socket) => {
   console.log("Connected to the socket");
+  console.log("Userid:", socket.user);
 });
 
 // Start the server
