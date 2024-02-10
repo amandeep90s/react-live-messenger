@@ -11,13 +11,13 @@ import { Form, Formik } from "formik";
 import PropTypes from "prop-types";
 import { useCallback, useContext, useState } from "react";
 import * as Yup from "yup";
-import socket from "../../socket";
 import TextField from "../TextField";
-import { FriendContext } from "./Home";
+import { FriendContext, SocketContext } from "./Home";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState("");
   const { setFriendList } = useContext(FriendContext);
+  const { socket } = useContext(SocketContext);
 
   const closeModal = useCallback(() => {
     setError("");

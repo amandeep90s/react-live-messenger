@@ -12,7 +12,7 @@ const handleLogin = async (req, res) => {
   const token = getJwt(req);
 
   if (!token) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ loggedIn: false });
+    return res.status(StatusCodes.UNAUTHORIZED).json({ loggedIn: false });
   }
 
   jwtVerify(token, process.env.JWT_SECRET)

@@ -36,7 +36,7 @@ app.use("/api/auth", authRouter); // Mount authentication routes
 app.set("trust proxy", 1);
 
 // Error handling middleware
-app.use((error, req, res, next) => {
+app.use((error, _req, res, _next) => {
   const statusCode = error.statusCode || 500;
   const message = error.message || "Something went wrong";
   res.status(statusCode).json({ status: false, statusCode, message });
@@ -73,6 +73,6 @@ setInterval(() => {
     return;
   }
 
-  pool.query("DELETE FROM users u where u.username != $1", ["lester"]);
+  pool.query("DELETE FROM users u where u.username != $1", ["amandeep"]);
   redisClient.flushall();
 }, resetEverythingInterval);

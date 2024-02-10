@@ -32,8 +32,14 @@ const SignUp = () => {
         axios
           .post("/api/auth/signup", { ...values })
           .then(({ data }) => {
-            if (data.loggedIn) {
-              setUser({ ...data });
+            if (!data) return;
+
+            setUser({ ...data });
+
+            if (data.status) {
+              setError(data.status);
+            } else if (data.loggedIn) {
+              localStorage.setItem("token", data.token);
               navigate("/home");
             }
           })
