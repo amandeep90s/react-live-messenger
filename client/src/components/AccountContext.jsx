@@ -17,21 +17,25 @@ const UserContext = ({ children }) => {
   const userContextMemo = useMemo(() => ({ user, setUser }), [user]);
 
   useEffect(() => {
-    axios
-      .get("/api/auth/isLoggedIn", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
-      .then(({ data }) => {
-        if (data.loggedIn) {
-          setUser({ ...data });
-          navigate("/home");
-        } else {
-          setUser({ loggedIn: false });
-        }
-      })
-      .catch(() => setUser({ loggedIn: false }));
+    if (user.token) {
+      axios
+        .get("/api/auth/isLoggedIn", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        })
+        .then(({ data }) => {
+          if (data.loggedIn) {
+            setUser({ ...data });
+            navigate("/home");
+          } else {
+            setUser({ loggedIn: false });
+          }
+        })
+        .catch(() => setUser({ loggedIn: false }));
+    } else {
+      setUser({ loggedIn: false });
+    }
   }, [navigate, user.token]);
 
   return (

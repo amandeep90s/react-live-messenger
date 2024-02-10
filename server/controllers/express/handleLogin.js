@@ -11,7 +11,7 @@ require("dotenv").config();
 const handleLogin = async (req, res) => {
   const token = getJwt(req);
 
-  if (!token) {
+  if (!token || ["null", "undefined"].includes(token)) {
     return res.status(StatusCodes.UNAUTHORIZED).json({ loggedIn: false });
   }
 

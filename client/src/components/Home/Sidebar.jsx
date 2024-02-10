@@ -23,7 +23,7 @@ const Sidebar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser({
-      loggedIn: null,
+      loggedIn: false,
       token: null,
       username: null,
     });

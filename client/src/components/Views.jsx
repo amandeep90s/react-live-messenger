@@ -5,7 +5,6 @@ import { AccountContext } from "./AccountContext";
 import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
 import Home from "./Home/Home";
-import NotFound from "./NotFound";
 import PrivateRoutes from "./PrivateRoutes";
 
 const Views = () => {
@@ -20,7 +19,7 @@ const Views = () => {
       <Route element={<PrivateRoutes />}>
         <Route path="/home" element={<Home />} />
       </Route>
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<Login />} />
     </Routes>
   );
 };
