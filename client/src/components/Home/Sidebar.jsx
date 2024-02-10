@@ -1,3 +1,4 @@
+import { useDisclosure } from "@chakra-ui/hooks";
 import { ChatIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -7,7 +8,6 @@ import {
   Heading,
   Text,
   VStack,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { Tab, TabList } from "@chakra-ui/tabs";
 import { useContext } from "react";
@@ -31,7 +31,7 @@ const Sidebar = () => {
 
         <VStack as={TabList}>
           {friendList.map((friend) => (
-            <HStack as={Tab} key={friend.username}>
+            <HStack as={Tab} key={`friend:${friend.username}`}>
               <Circle
                 bg={friend.connected ? "green.500" : "red.500"}
                 w="20px"
