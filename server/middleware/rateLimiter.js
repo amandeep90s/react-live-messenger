@@ -1,23 +1,21 @@
-const redisClient = require("../redis");
 const { StatusCodes } = require("http-status-codes");
+const redisClient = require("../redis");
 
 const rateLimiter =
-  (limitSeconds = 60, limitApiCall = 10) =>
+  (secondsLimit = 60, limitAmount = 10) =>
   async (req, res, next) => {
-    const ip = req.connection.remoteAddress.slice(0, 6);
+    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     const [response] = await redisClient
       .multi()
       .incr(ip)
-      .expire(ip, limitSeconds)
+      .expire(ip, secondsLimit)
       .exec();
 
-    if (response[1] > limitApiCall) {
-      res
-        .status(StatusCodes.TOO_MANY_REQUESTS)
-        .json({
-          loggedIn: false,
-          status: "Slow down!! Try again in a minute!",
-        });
+    if (response[1] > limitAmount) {
+      res.status(StatusCodes.TOO_MANY_REQUESTS).json({
+        loggedIn: false,
+        status: "Slow down!! Try again in a minute!",
+      });
     } else {
       next();
     }

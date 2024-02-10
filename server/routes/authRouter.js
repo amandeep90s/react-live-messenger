@@ -4,7 +4,7 @@ const {
   attemptRegister,
   handleLogin,
 } = require("../controllers/authController");
-const validateData = require("../middleware/authMiddleware");
+const validateData = require("../middleware/validateData");
 const rateLimiter = require("../middleware/rateLimiter");
 
 const router = express.Router();
