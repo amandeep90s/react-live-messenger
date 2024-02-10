@@ -36,7 +36,7 @@ const attemptLogin = async (req, res) => {
         { expiresIn: "7d" }
       )
         .then((token) =>
-          res.status(StatusCodes.OK).json({ loggedIn: true, token })
+          res.status(StatusCodes.OK).json({ loggedIn: true, token, username })
         )
         .catch((error) => {
           console.log(error);

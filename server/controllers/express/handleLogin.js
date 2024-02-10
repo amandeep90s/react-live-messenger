@@ -28,7 +28,9 @@ const handleLogin = async (req, res) => {
           .json({ loggedIn: false, token: null });
       }
 
-      res.status(StatusCodes.OK).json({ loggedIn: true, token });
+      res
+        .status(StatusCodes.OK)
+        .json({ loggedIn: true, token, username: decoded.username });
     })
     .catch((error) => {
       console.log(error);

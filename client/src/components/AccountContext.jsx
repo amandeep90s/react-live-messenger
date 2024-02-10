@@ -9,7 +9,9 @@ const UserContext = ({ children }) => {
   const [user, setUser] = useState({
     loggedIn: null,
     token: localStorage.getItem("token"),
+    username: null,
   });
+
   const navigate = useNavigate();
 
   const userContextMemo = useMemo(() => ({ user, setUser }), [user]);
