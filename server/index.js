@@ -10,6 +10,7 @@ const {
   initializeUser,
   addFriend,
   onDisconnect,
+  onDm,
 } = require("./controllers/socketController");
 const {
   corsConfig,
@@ -56,6 +57,9 @@ io.on("connect", (socket) => {
   socket.on("add_friend", (friendName, cb) => {
     addFriend(socket, friendName, cb);
   });
+
+  // DM message
+  socket.on("dm", (message) => onDm(socket, message));
 
   // On Disconnect
   socket.on("disconnecting", () => onDisconnect(socket));
